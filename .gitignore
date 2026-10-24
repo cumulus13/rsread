@@ -30,3 +30,8 @@ dists/
 ANSWER*.md
 QUEST*.md
 PLAN*.md
+
+# Added entries (3 items)
+*sublime*
+*.patch
+QUESTION*.md
