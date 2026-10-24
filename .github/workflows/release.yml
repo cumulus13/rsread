@@ -31,14 +31,30 @@ jobs:
 
   release:
     name: publish GitHub release
-    needs: build
+    # Publish whatever was built, even when some targets failed (only a cancelled run or a bad tag stops it).
+    needs: [verify, build]
+    if: ${{ !cancelled() && needs.verify.result == 'success' }}
     runs-on: ubuntu-latest
     steps:
+      - name: Build status
+        if: needs.build.result != 'success'
+        run: |
+          echo "::warning::some build targets failed (build result ${{ needs.build.result }}), publishing the targets that succeeded"
+
       - uses: actions/download-artifact@v4
         with:
           pattern: rsread-*
           merge-multiple: true
           path: dist
+
+      - name: Require at least one artifact
+        run: |
+          count=$(find dist -type f | wc -l)
+          echo "artifacts: $count"
+          if [ "$count" -eq 0 ]; then
+            echo "::error::no build produced an artifact, nothing to release"
+            exit 1
+          fi
 
       - name: Checksums
         working-directory: dist

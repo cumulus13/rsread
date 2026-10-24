@@ -72,7 +72,6 @@ jobs:
       - uses: dtolnay/rust-toolchain@stable
         with:
           targets: aarch64-linux-android
-      - uses: taiki-e/install-action@v2
-        with:
-          tool: cross
-      - run: cross build --locked --release --target aarch64-linux-android
+      - uses: Swatinem/rust-cache@v2
+      - run: bash .github/scripts/android-env.sh aarch64-linux-android
+      - run: cargo build --locked --release --target aarch64-linux-android

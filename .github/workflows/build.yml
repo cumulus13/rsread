@@ -32,10 +32,10 @@ jobs:
           - { target: aarch64-unknown-linux-gnu,     os: ubuntu-latest, cross: true }
           - { target: aarch64-unknown-linux-musl,    os: ubuntu-latest, cross: true }
           - { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, cross: true }
-          # Android (Termux)
-          - { target: aarch64-linux-android,         os: ubuntu-latest, cross: true }
-          - { target: armv7-linux-androideabi,       os: ubuntu-latest, cross: true, experimental: true }
-          - { target: x86_64-linux-android,          os: ubuntu-latest, cross: true, experimental: true }
+          # Android (Termux): built with the runner's NDK (cross's images lack libunwind for recent Rust)
+          - { target: aarch64-linux-android,         os: ubuntu-latest, ndk: true }
+          - { target: armv7-linux-androideabi,       os: ubuntu-latest, ndk: true, experimental: true }
+          - { target: x86_64-linux-android,          os: ubuntu-latest, ndk: true, experimental: true }
           # macOS
           - { target: aarch64-apple-darwin,          os: macos-latest }
           - { target: x86_64-apple-darwin,           os: macos-latest }
@@ -59,6 +59,10 @@ jobs:
         uses: taiki-e/install-action@v2
         with:
           tool: cross
+
+      - name: Configure Android NDK
+        if: matrix.ndk == true
+        run: bash .github/scripts/android-env.sh "${{ matrix.target }}"
 
       - name: Build
         shell: bash
