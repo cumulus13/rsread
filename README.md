@@ -10,14 +10,14 @@ Any other file type gets highlighting only.
 ## Install
 
 Prebuilt binaries for every release (Linux gnu/musl x86_64 + aarch64 + armv7, macOS Intel + Apple Silicon,
-Windows x86_64/i686/arm64, Android) are on the [Releases](https://github.com/cumulus13/rsread/releases) page.
+Windows x86_64/i686/arm64, Android) are on the [Releases](https://github.com/licface/rsread/releases) page.
 
 ```sh
 # Linux / macOS / Termux: detects the platform and installs the right binary
-curl -fsSL https://raw.githubusercontent.com/cumulus13/rsread/main/install.sh | sh
+curl -fsSL https://raw.githubusercontent.com/licface/rsread/main/install.sh | sh
 
 # from source
-cargo install --git https://github.com/cumulus13/rsread
+cargo install --git https://github.com/licface/rsread
 
 # with cargo
 cargo install rsread
@@ -26,7 +26,7 @@ cargo install rsread
 ### Android / Termux
 
 Use the installer above, or download `rsread-aarch64-linux-android.tar.gz` (`armv7-linux-androideabi` for
-32-bit phones). Building inside Termux also works: `pkg install rust git && cargo install --git https://github.com/cumulus13/rsread`.
+32-bit phones). Building inside Termux also works: `pkg install rust git && cargo install --git https://github.com/licface/rsread`.
 Clipboard mode (`rsread c`, `-y`) needs `pkg install termux-api` plus the Termux:API app.
 
 ### Releasing
