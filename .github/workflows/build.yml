@@ -1,0 +1,95 @@
+name: Build
+
+# Builds release binaries for every supported platform.
+# Used standalone (manual / push to main) and as a reusable workflow by release.yml.
+on:
+  workflow_dispatch:
+  workflow_call:
+  push:
+    branches: [main, master]
+    paths:
+      - "src/**"
+      - "Cargo.toml"
+      - "Cargo.lock"
+      - ".github/workflows/build.yml"
+
+env:
+  CARGO_TERM_COLOR: always
+  BIN: rsread
+
+jobs:
+  build:
+    name: ${{ matrix.target }}
+    runs-on: ${{ matrix.os }}
+    continue-on-error: ${{ matrix.experimental == true }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          # Linux
+          - { target: x86_64-unknown-linux-gnu,      os: ubuntu-latest }
+          - { target: x86_64-unknown-linux-musl,     os: ubuntu-latest, cross: true }
+          - { target: aarch64-unknown-linux-gnu,     os: ubuntu-latest, cross: true }
+          - { target: aarch64-unknown-linux-musl,    os: ubuntu-latest, cross: true }
+          - { target: armv7-unknown-linux-gnueabihf, os: ubuntu-latest, cross: true }
+          # Android (Termux)
+          - { target: aarch64-linux-android,         os: ubuntu-latest, cross: true }
+          - { target: armv7-linux-androideabi,       os: ubuntu-latest, cross: true, experimental: true }
+          - { target: x86_64-linux-android,          os: ubuntu-latest, cross: true, experimental: true }
+          # macOS
+          - { target: aarch64-apple-darwin,          os: macos-latest }
+          - { target: x86_64-apple-darwin,           os: macos-latest }
+          # Windows
+          - { target: x86_64-pc-windows-msvc,        os: windows-latest }
+          - { target: i686-pc-windows-msvc,          os: windows-latest, experimental: true }
+          - { target: aarch64-pc-windows-msvc,       os: windows-latest, experimental: true }
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.target }}
+
+      - uses: Swatinem/rust-cache@v2
+        with:
+          key: ${{ matrix.target }}
+
+      - name: Install cross
+        if: matrix.cross == true
+        uses: taiki-e/install-action@v2
+        with:
+          tool: cross
+
+      - name: Build
+        shell: bash
+        run: |
+          if [ "${{ matrix.cross }}" = "true" ]; then
+            cross build --release --locked --target "${{ matrix.target }}"
+          else
+            cargo build --release --locked --target "${{ matrix.target }}"
+          fi
+
+      - name: Package
+        id: pkg
+        shell: bash
+        run: |
+          target="${{ matrix.target }}"
+          name="${BIN}-${target}"
+          ext=""
+          case "$target" in *windows*) ext=".exe" ;; esac
+          mkdir "$name"
+          cp "target/${target}/release/${BIN}${ext}" README.md LICENSE "$name/"
+          if [ -n "$ext" ]; then
+            7z a -tzip "${name}.zip" "$name" > /dev/null
+            echo "asset=${name}.zip" >> "$GITHUB_OUTPUT"
+          else
+            tar czf "${name}.tar.gz" "$name"
+            echo "asset=${name}.tar.gz" >> "$GITHUB_OUTPUT"
+          fi
+
+      - uses: actions/upload-artifact@v4
+        with:
+          name: ${{ env.BIN }}-${{ matrix.target }}
+          path: ${{ steps.pkg.outputs.asset }}
+          if-no-files-found: error
+          retention-days: 14

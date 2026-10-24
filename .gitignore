@@ -1,0 +1,32 @@
+*.pyc
+*.bak
+*.zip
+*.rar
+*.7z
+*.mp3
+*.wav
+*.sublime-workspace
+.hg/
+build/
+*.hgignore
+*.hgtags
+*dist/
+*.egg-info/
+traceback.log
+__pycache__/
+*.log
+
+# Added entries (8 items)
+*tmp
+*.tmp
+download/
+downloads/
+gitignore_backup/
+dist/
+dists/
+*.exe
+
+# Added entries (3 items)
+ANSWER*.md
+QUEST*.md
+PLAN*.md
