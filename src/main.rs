@@ -1,6 +1,9 @@
-//! rsread — fast multi-language code reader (Rust port and extension of pyread).
-//!
+//! File: src\main.rs
 //! Author: Hadi Cahyadi <cumulus13@gmail.com>
+//! Date: 2026-10-27
+//! Description: rsread — fast multi-language code reader (Rust port and extension of pyread).
+//! License: MIT
+
 
 mod analyzer;
 mod clip;
@@ -12,6 +15,8 @@ mod themes;
 
 use anyhow::{anyhow, bail, Context, Result};
 use clap::{CommandFactory, Parser, ValueEnum};
+use clap_version_flag::colorful_version;
+use clap_color_help::default_styles;
 use colored::Colorize;
 use lang::Lang;
 use render::{emit, Renderer, View};
@@ -46,9 +51,10 @@ enum ColorMode {
 #[derive(Parser)]
 #[command(
     name = "rsread",
-    version,
+    disable_version_flag = true,
     about = "Fast multi-language code reader: structure tree, syntax highlighting, duplicate detection and Git change markers",
-    after_help = EXAMPLES
+    after_help = EXAMPLES,
+    styles = defaut_styles()
 )]
 struct Cli {
     /// File(s) or directories to analyze; `c` = clipboard, `-` = stdin
@@ -858,6 +864,11 @@ fn run(mut cli: Cli) -> Result<i32> {
 }
 
 fn main() {
+    let os_args: Vec<string> = std::env::args().collect();
+    if os_args.len() == 2 && (os_args[1] == "-V" || os_args[1] == "--version") {
+        let version = colorful_version!();
+        version.print_and_exit();
+    }
     // `-nl` is a multi-letter short flag in pyread; clap would read it as `-n -l`
     let args: Vec<std::ffi::OsString> = std::env::args_os()
         .map(|a| {
