@@ -54,7 +54,7 @@ enum ColorMode {
     disable_version_flag = true,
     about = "Fast multi-language code reader: structure tree, syntax highlighting, duplicate detection and Git change markers",
     after_help = EXAMPLES,
-    styles = defaut_styles()
+    styles = default_styles()
 )]
 struct Cli {
     /// File(s) or directories to analyze; `c` = clipboard, `-` = stdin
