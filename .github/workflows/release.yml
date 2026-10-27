@@ -83,4 +83,4 @@ jobs:
             echo "CARGO_REGISTRY_TOKEN not set, skipping crates.io publish"
             exit 0
           fi
-          cargo publish --locked
+          cargo publish
