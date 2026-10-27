@@ -41,7 +41,7 @@ jobs:
         run: |
           echo "::warning::some build targets failed (build result ${{ needs.build.result }}), publishing the targets that succeeded"
 
-      - uses: actions/download-artifact@v4
+      - uses: actions/download-artifact@v8
         with:
           pattern: rsread-*
           merge-multiple: true
