@@ -864,7 +864,7 @@ fn run(mut cli: Cli) -> Result<i32> {
 }
 
 fn main() {
-    let os_args: Vec<string> = std::env::args().collect();
+    let os_args: Vec<String> = std::env::args().collect();
     if os_args.len() == 2 && (os_args[1] == "-V" || os_args[1] == "--version") {
         let version = colorful_version!();
         version.print_and_exit();
